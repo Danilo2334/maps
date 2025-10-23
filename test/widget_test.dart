@@ -1,30 +1,37 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:maps/main.dart';
+import 'package:maps/core/validators.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Validators.telCol', () {
+    test('accepta celulares colombianos', () {
+      expect(Validators.telCol('3001234567'), isTrue);
+      expect(Validators.telCol(' 3159876543 '), isTrue);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('acepta telefonos fijos', () {
+      expect(Validators.telCol('1234567'), isTrue);
+      expect(Validators.telCol('6021234567'), isTrue);
+      expect(Validators.telCol('60 21234567'), isTrue);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('rechaza formatos invalidos', () {
+      expect(Validators.telCol('1234'), isFalse);
+      expect(Validators.telCol('30A1234567'), isFalse);
+      expect(Validators.telCol('300-1234567'), isFalse);
+    });
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('Validators.horarioSimple', () {
+    test('acepta horarios validos', () {
+      expect(Validators.horarioSimple('L-D 08:00-18:00'), isTrue);
+      expect(Validators.horarioSimple('L-S 7:00-19:00'), isTrue);
+      expect(Validators.horarioSimple('Ma J 09:30-20:00'), isTrue);
+    });
+
+    test('rechaza horarios invalidos', () {
+      expect(Validators.horarioSimple(''), isFalse);
+      expect(Validators.horarioSimple('08:00-18:00'), isFalse);
+      expect(Validators.horarioSimple('L-D 8-18'), isFalse);
+    });
   });
 }
